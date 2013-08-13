@@ -2,7 +2,6 @@ package Spray1
 
 
 import java.io.{FileWriter, File}
-import org.parboiled.common.FileUtils
 import scala.concurrent.duration._
 import akka.actor.{Props, Actor}
 import akka.pattern.ask
