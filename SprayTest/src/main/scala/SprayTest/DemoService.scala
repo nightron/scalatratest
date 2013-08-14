@@ -1,34 +1,22 @@
-package Spray1
-
-
-import java.io.{FileWriter, File}
+import java.io.File
 import scala.concurrent.duration._
-import akka.actor.{Props, Actor}
-import akka.pattern.ask
-import scala.concurrent.Future
-import SprayTest.{MyJsonProtocol, Person}
-import scala.collection.parallel.mutable
-import scala.annotation.{Annotation, StaticAnnotation}
-import scalax.io._
-import SprayTest.Person
+import scala.Some
+
 
 import org.scalatra._
 import org.scalatra.scalate.ScalateSupport
 import org.scalatra.swagger._
-import org.scalatra.json.{ JValueResult, JacksonJsonSupport }
-import org.scalatra.swagger._
-import org.json4s._
-import org.json4s.JsonDSL._
+import org.json4s.{DefaultFormats, Formats}
+import org.scalatra.json._
+import scalax.io._
 
-
-class FileProcessingApi (implicit val swagger: Swagger) extends ScalatraServlet
+class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
   with SwaggerSupport
   with ScalateSupport
-  with JacksonJsonSupport {
+  with NativeJsonSupport {
 
   protected implicit val jsonFormats: Formats = DefaultFormats
-  override protected val applicationName: Option[String] = Some("file")
-  protected val applicationName: Option[String] = Some("pet")
+  override protected val applicationName: Option[String] = Some("file process")
   protected val applicationDescription: String = "File Processing Api"
 
   before() {
@@ -223,7 +211,7 @@ class FileProcessingApi (implicit val swagger: Swagger) extends ScalatraServlet
                }
              }
              if(personAge < 0 )
-               complete(BadRequest, "Age must be a number higher or equal 0")
+               <p>Bad Request</p>
              else{
                val person  = Person(firstname , personAge, gender, address)
                val PersonFormat = jsonFormat(Person, "name", "age", "sex", "address")
@@ -232,7 +220,7 @@ class FileProcessingApi (implicit val swagger: Swagger) extends ScalatraServlet
                val source = scala.io.Source.fromFile("file.txt")
                val lines = source.mkString
                source.close()
-               complete(lines)
+               <p>{lines.toString}</p>
              }
            }
          }
@@ -266,9 +254,9 @@ class FileProcessingApi (implicit val swagger: Swagger) extends ScalatraServlet
         val newGender = newSex.toLowerCase
         if(personAge < 0 | !(gender.equals("male") | gender.equals("female") | gender.isEmpty) | !(newGender.equals("male") | newGender.equals("female") | newGender.isEmpty))
              if (personAge < 0)
-               complete(BadRequest, "Age must be a number higher or equal 0")
+               <p>"Age must be a number higher or equal 0"</p>
              else
-               complete(BadRequest, "Wrong sex parameter use \"male\" or \"female\"")
+               <p>"Wrong sex parameter use \"male\" or \"female\""</p>
              else{
                   if (temp == 0){
                     temp = age.toInt
@@ -307,7 +295,7 @@ class FileProcessingApi (implicit val swagger: Swagger) extends ScalatraServlet
                           }
                         }
                         if (personAge < 0 ){
-                          complete(BadRequest, "new Age parameter must be a number higher or equal 0")
+                          <p>"new Age parameter must be a number higher or equal 0") </p>
                         } else {
                           if (temporary == 0){
                             temporary = newAge.toInt
@@ -324,7 +312,7 @@ class FileProcessingApi (implicit val swagger: Swagger) extends ScalatraServlet
                     val source = scala.io.Source.fromFile("file.txt")
                     val lines = source.mkString
                     source.close()
-                    complete(lines)
+                    <p>{lines.toString}</p>
                   }
                 }
      }

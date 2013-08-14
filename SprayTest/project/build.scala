@@ -29,7 +29,12 @@ object FlowershopBuild extends Build {
         "org.scalatra" %% "scalatra-specs2" % ScalatraVersion % "test",
         "ch.qos.logback" % "logback-classic" % "1.0.6" % "runtime",
         "org.eclipse.jetty" % "jetty-webapp" % "8.1.8.v20121106" % "container",
-        "org.eclipse.jetty.orbit" % "javax.servlet" % "3.0.0.v201112011016" % "container;provided;test" artifacts (Artifact("javax.servlet", "jar", "jar"))
+        "org.eclipse.jetty.orbit" % "javax.servlet" % "3.0.0.v201112011016" % "container;provided;test" artifacts (Artifact("javax.servlet", "jar", "jar")),
+        "org.codehaus.jackson" % "jackson-jaxrs" % "1.9.13",
+        "org.scalaforge"      % "scalax"          % "0.1",
+        "com.wordnik" % "swagger-jaxrs_2.9.1" % "1.2.1",
+        "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.2",
+        "com.github.scala-incubator.io" %% "scala-io-file" % "0.4.2"
       ),
       scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
         Seq(
