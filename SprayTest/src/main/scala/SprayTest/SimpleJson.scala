@@ -1,6 +1,6 @@
 
 
-import DefaultJsonProtocol._
+//mport DefaultJsonProtocol._
 
 import scalax.io.WriterResource
 
@@ -23,12 +23,14 @@ object ApiResponseType{
   val TOO_BUSY = "too busy"
 }
 
+/*
 
 trait MyJsonProtocol extends DefaultJsonProtocol {
   //implicit val PersonFormat = jsonFormat4(Person.apply)
   implicit val PersonFormat = jsonFormat(Person, "name", "age", "sex", "address")
 }
 
+*/
 
 
 

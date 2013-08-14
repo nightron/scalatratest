@@ -7,13 +7,13 @@ import ScalateKeys._
 
 object FlowershopBuild extends Build {
   val Organization = "com.example"
-  val Name = "Flowershop"
+  val Name = "FileProcessing"
   val Version = "0.1.0-SNAPSHOT"
-  val ScalaVersion = "2.10.0"
+  val ScalaVersion = "2.10.2"
   val ScalatraVersion = "2.2.1"
 
   lazy val project = Project (
-    "flowershop",
+    "fileprocessing",
     file("."),
     settings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ scalateSettings ++ Seq(
       organization := Organization,
