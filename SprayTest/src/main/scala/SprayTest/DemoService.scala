@@ -16,7 +16,7 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
   with NativeJsonSupport {
 
   protected implicit val jsonFormats: Formats = DefaultFormats
-  override protected val applicationName: Option[String] = Some("file process")
+  override protected val applicationName = Some("file process")
   protected val applicationDescription: String = "File Processing Api"
 
   before() {
@@ -26,7 +26,8 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
 
 
 
-   get("") {
+   get("/index") {
+     contentType="text/html"
      <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
        <body>
          <h1>Say hello to <i>spray-routing</i> on <i>spray-can</i>!</h1>
@@ -43,7 +44,9 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
      </html>
     }
    get("/plik") {
-     <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
+     contentType="text/html"
+     <html >
+
        <body>
          <h1>Say hello to <i>spray-can</i>!</h1>
          <p>Defined operations:</p>
@@ -59,11 +62,24 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
     }
     get("/plik/open") {
       val source = scala.io.Source.fromFile("file.txt")
-      val lines = source.mkString
-      source.close()
+      var lines = source.mkString
       println(lines)
+      lines = lines.replaceAll("\n", " < br /> ")
+      source.close()
+      contentType = "text/html"
+      <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+        <head>
+        <script type="text/javascript" src="/js/MissingText.js"></script>
+
+        </head>
+        <body>
+      <div name=test></div>
+      </body>
+      </html>
     }
     get("/plik/addingName") {
+      contentType="text/html"
       <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
         <head>
           <link rel="stylesheet" type="text/css" href="/mystyle.css" ></link>
@@ -98,6 +114,7 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
       </html>
     }
     get("/plik/removeName"){
+      contentType="text/html"
       <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
         <body>
           <h1>Remove from file</h1>
@@ -108,6 +125,7 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
       </html>
     }
     get("/plik/findBy"){
+      contentType="text/html"
       <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
         <body>
           <h1>Find by </h1>
@@ -122,6 +140,7 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
       </html>
     }
     get("/plik/edit"){
+      contentType="text/html"
       <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
         <body>
           <h1>Find record you want to edit </h1>
@@ -139,11 +158,11 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
         </body>
       </html>
     }
-    get("/plik/find"){
-          var name = multiParams.get("name")
-          var age = multiParams.get("age")
-          var sex = multiParams.get("sex")
-          var address = multiParams.get("address")
+  /*  get("/plik/find"){
+          var name = multiParams.get("name").toString
+          var age = multiParams.get("age").toString
+          var sex = multiParams.get("sex").toString
+          var address = multiParams.get("address").toString
 
                   var temp = 0
                   if (age.isEmpty ){
@@ -186,11 +205,7 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
                 <p>{lines.toString}</p>
                 }
 
-      post("/stop")  {
 
-           in(1.second){ actorSystem.shutdown()
-           <div> Shutting down in 1 second...</div>
-        }
 
       post("/plik/append"){
         var name = multiParams.get("firstname")
@@ -316,14 +331,13 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
                   }
                 }
      }
-
-
-}
+*/
 
 
 
-  def in[U](duration: FiniteDuration)(body: => U): Unit =
-    actorSystem.scheduler.scheduleOnce(duration)(body)
+/*
+
+
 
   def findMatch(line : String ,  personToFind : Person ) : String = {
 //    import MyJsonProtocol._
@@ -376,5 +390,6 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
     }
     PersonFormat.write(Person(name, age, sex, address)).toString()
   }
+*/
 
 }
