@@ -1,22 +1,17 @@
-/*
-$("#test").html( $("#test").text() );
+	var reader = new FileReader();
 
-   $(document).ready(function() {
-       var text = $("#test").val();
-       text = text.replace('&lt;','<','&gt;','>','&quot;','"');
-   });*/
+		function readText(that){
 
+			if(that.files && that.files[0]){
+				var reader = new FileReader();
+				reader.onload = function (e) {  
+					var output=e.target.result;
+				
+					//process text to show only lines with "@":				
+					output=output.split("\n").filter(/./.test, /\@/).join("\n");
 
-
-   document.ReadURL.readFile("/js/file.txt");
-    setTimeout("showFileContent()",100);
-
-    function showFileContent() {
-     if (document.ReadURL.finished==0) {
-      setTimeout("showFileContent()",100);
-      return;
-     }
-     fileContent=document.ReadURL.fileContent;
-     document.test.value=fileContent;
-
-    }
+					document.getElementById('main').innerHTML= output;
+				};//end onload()
+				reader.readAsText(that.files[0]);
+			}//end if html5 filelist support
+		} 
