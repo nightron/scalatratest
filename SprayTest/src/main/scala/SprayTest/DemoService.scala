@@ -63,20 +63,8 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
     get("/plik/open") {
       val source = scala.io.Source.fromFile("file.txt")
       var lines = source.mkString
-      println(lines)
-      lines = lines.replaceAll("\n", " < br /> ")
       source.close()
-      contentType = "text/html"
-      <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
-        <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-        <head>
-        <script type="text/javascript" src="/js/MissingText.js"></script>
-
-        </head>
-        <body>
-      <div name=test></div>
-      </body>
-      </html>
+     lines
     }
     get("/plik/addingName") {
       contentType="text/html"
