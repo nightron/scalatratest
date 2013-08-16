@@ -1,4 +1,5 @@
 import java.io.File
+import org.codehaus.jackson.map.ObjectMapper
 import scala.concurrent.duration._
 import scala.Some
 
@@ -8,12 +9,14 @@ import org.scalatra.scalate.ScalateSupport
 import org.scalatra.swagger._
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra.json._
+import scala.util.parsing.json.JSONObject
 import scalax.io._
 
 class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
   with SwaggerSupport
   with ScalateSupport
-  with NativeJsonSupport {
+  with NativeJsonSupport
+  with MethodOverride{
 
   protected implicit val jsonFormats: Formats = DefaultFormats
   override protected val applicationName = Some("file process")
@@ -146,193 +149,89 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
         </body>
       </html>
     }
-  /*  get("/plik/find"){
-          var name = multiParams.get("name").toString
-          var age = multiParams.get("age").toString
-          var sex = multiParams.get("sex").toString
-          var address = multiParams.get("address").toString
+  post("/plik/append"){
+    var name =params.get("firstname").get
+    var age =params.get("age").get
+    var sex = params.get("sex").get
+    var address = params.get("address").get
 
-                  var temp = 0
-                  if (age.isEmpty ){
-                    temp = -1
-                  }
-                  else  { temp = age.toInt }
-                  var person = Person(name,temp,sex,address)
-                  var result = ""
-                  try{
-                    var source = scala.io.Source.fromFile("file.txt")
-                    for ( line <- source.getLines()){
-                      var currentLineResult = findMatch( line, person)
-                      result = result + currentLineResult
-                      currentLineResult =""
-                    }
+    println(name + age + sex + address + " parametry")
 
-                    source.close()
-                  }
-          println(result)
-    }
-
-    get("/remove"){
-            var user = params.get("user")
-                  val nameToRemove = user
-                  val file: Seekable =  Resource.fromFile(new File("file.txt"))
-                  var position = 0
-                  try{
-                    for ( line <- file.lines()){
-                      if (parse(line).convertTo[Person].name.equals(nameToRemove)){
-                        file.patch(position, "", OverwriteSome(line.length))
-                        println(line)
-                      }  else {
-                        position = position + line.length
-                      }
-                    }
-                  }
-                  val source = scala.io.Source.fromFile("file.txt")
-                  val lines = source.mkString
-                  source.close()
-                <p>{lines.toString}</p>
-                }
-
-
-
-      post("/plik/append"){
-        var name = multiParams.get("firstname")
-        var age = multiParams.get("age")
-        var sex = multiParams.get("sex")
-        var address = multiParams.get("address")
-
-        val gender = sex.toLowerCase
-        if( !(gender.equals("male") | gender.equals("female")) | firstname.isEmpty | age.isEmpty | address.isEmpty )
-              complete(BadRequest, "Bad parameters used.")
-        else{
-             var personAge = 0
-             try {
-               personAge =age.toInt
-             } catch {
-               case ex: NumberFormatException =>{
-                 personAge = -1
-               }
-             }
-             if(personAge < 0 )
-               <p>Bad Request</p>
-             else{
-               val person  = Person(firstname , personAge, gender, address)
-               val PersonFormat = jsonFormat(Person, "name", "age", "sex", "address")
-               val file: Seekable =  Resource.fromFile("file.txt")
-               file.append("\n" + PersonFormat.write(person))
-               val source = scala.io.Source.fromFile("file.txt")
-               val lines = source.mkString
-               source.close()
-               <p>{lines.toString}</p>
-             }
-           }
-         }
-
-       post("/plik/edite"){
-
-        var name = multiParams.get("name")
-        var newName = multiParams.get("newName")
-        var age = multiParams.get("age")
-        var newAge = multiParams.get("newAge")
-        var sex = multiParams.get("sex")
-        var newSex = multiParams.get("newSex")
-        var address = multiParams.get("address")
-        var newAddress = multiParams.get("newAdress")
-
-        var temp = 0
-        var personAge = 0
-        if (age.isEmpty ){
-           temp = -1
-          }
-        else  {
-           try {
-                personAge =age.toInt
-               } catch {
-                   case ex: NumberFormatException =>{
-                      personAge = -1
-                  }
-                 }
-               }
-        val gender = sex.toLowerCase
-        val newGender = newSex.toLowerCase
-        if(personAge < 0 | !(gender.equals("male") | gender.equals("female") | gender.isEmpty) | !(newGender.equals("male") | newGender.equals("female") | newGender.isEmpty))
-             if (personAge < 0)
-               <p>"Age must be a number higher or equal 0"</p>
-             else
-               <p>"Wrong sex parameter use \"male\" or \"female\""</p>
-             else{
-                  if (temp == 0){
-                    temp = age.toInt
-                 }
-        var temporary = 0
+    val gender = sex.toLowerCase
+    if( !(gender.equals("male") | gender.equals("female")) | name.isEmpty | age.isEmpty | address.isEmpty )
+      NotFound("Bad parameters used.")
+    else{
+      var personAge = 0
+      try {
+        personAge =age.toInt
+      } catch {
+        case ex: NumberFormatException =>{
+          personAge = -1
+        }
+      }
+      if(personAge < 0 )
+        <p>Bad Request</p>
+      else{
+        val person: Person = Person(name , personAge, gender, address)
+        println(toJson(person))
         val file: Seekable =  Resource.fromFile("file.txt")
-        var position = 0
-        val personToEdit = Person(name, temp, sex, address)
-        try{
-            val fileLenght = file.lines().mkString.length
-            var offset = 0
-            for( line <- file.lines()){
-               var currentLineResult = ""
-               println(line)
-               if ( position + line.length <= fileLenght){
-                   currentLineResult = findMatch( line, personToEdit)}
-               else{
-                    val linesubstring = line.substring(0, (line.length - offset))
-                    if ( linesubstring.isEmpty == false)
-                         currentLineResult = findMatch ( line.substring(0, (line.length-offset)), personToEdit )}
-                    if ( currentLineResult.isEmpty){
-                        position = position + line.length + 1
-                      }
-                      else {
+        file.append("\n" + toJson(person))
+        val source = scala.io.Source.fromFile("file.txt")
+        val lines = source.mkString
+        source.close()
+        lines.toString
+      }
+    }
+  }
+  get("/plik/find"){
+    var name = params.get("name").get
+    var age = params.get("age").get
+    var sex = params.get("sex").get
+    var address = params.get("address").get
 
-                        if (newAge.isEmpty ){
-                          temporary = -1
-                        }
-                        else  {
-                          try {
-                            personAge =newAge.toInt
-                          } catch {
-                            case ex: NumberFormatException =>{
-                              personAge = -1
-                            }
-                          }
-                        }
-                        if (personAge < 0 ){
-                          <p>"new Age parameter must be a number higher or equal 0") </p>
-                        } else {
-                          if (temporary == 0){
-                            temporary = newAge.toInt
-                          }
-                          val newLine =  editPerson(line , Person(newName, temporary, newSex, newAddress))
-                          file.patch(position , newLine , OverwriteSome(line.length))
-                          file.string
-                          if ( newLine.length > line.length)
-                            offset = offset + (newLine.length - line.length)
-                          position = position + newLine.length + 1
-                        }
-                      }
-                    }
-                    val source = scala.io.Source.fromFile("file.txt")
-                    val lines = source.mkString
-                    source.close()
-                    <p>{lines.toString}</p>
-                  }
-                }
-     }
-*/
+    var temp = 0
+    if (age.isEmpty ){
+      temp = -1
+    }
+    else  { temp = age.toInt }
+    var person = Person(name,temp,sex,address)
+    var result = ""
+    try{
+      var source = scala.io.Source.fromFile("file.txt")
+      for ( line <- source.getLines()){
+        var currentLineResult = findMatch( line, person)
+        result = result + currentLineResult
+        currentLineResult =""
+      }
 
-
-
-/*
-
-
+      source.close()
+    }
+    result
+  }
+  get("/plik/remove"){
+    val nameToRemove = params.get("user").get
+    val file: Seekable =  Resource.fromFile(new File("file.txt"))
+    var position = 0
+    try{
+      for ( line <- file.lines()){
+        if (parse(line , true).extract[Person].name.equals(nameToRemove)){
+          file.patch(position, "", OverwriteSome(line.length))
+          println(line)
+        }  else {
+          position = position + line.length
+        }
+      }
+    }
+    val source = scala.io.Source.fromFile("file.txt")
+    val lines = source.mkString
+    source.close()
+    lines.toString
+  }
 
   def findMatch(line : String ,  personToFind : Person ) : String = {
-//    import MyJsonProtocol._
-    var currentLine =  parse(line).convertTo[Person]
-    var currentLineResult =  line + "\n"
 
-    //var string =""
+    var currentLine =  parse(line , true).extract[Person]
+    var currentLineResult =  line + "\n"
     if (personToFind.name == "" ){
     }
     else if (currentLine.name != personToFind.name)
@@ -353,9 +252,104 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
     currentLineResult
 
   }
+  post("/plik/edite"){
+
+    var name = params.get("name").get
+    var newName = params.get("newName").get
+    var age = params.get("age").get
+    var newAge = params.get("newAge").get
+    var sex = params.get("sex").get
+    var newSex = params.get("newSex").get
+    var address = params.get("address").get
+    var newAddress = params.get("newAddress").get
+
+    var temp = 0
+    var personAge = 0
+    if (age.isEmpty ){
+      temp = -1
+    }
+    else  {
+      try {
+        personAge =age.toInt
+      } catch {
+        case ex: NumberFormatException =>{
+          personAge = -1
+        }
+      }
+    }
+    val gender = sex.toLowerCase
+    val newGender = newSex.toLowerCase
+    if(personAge < 0 | !(gender.equals("male") | gender.equals("female") | gender.isEmpty) | !(newGender.equals("male") | newGender.equals("female") | newGender.isEmpty))
+      if (personAge < 0)
+        <p>"Age must be a number higher or equal 0"</p>
+      else
+        <p>"Wrong sex parameter use \"male\" or \"female\""</p>
+    else{
+      if (temp == 0){
+        temp = age.toInt
+      }
+      var temporary = 0
+      val file: Seekable =  Resource.fromFile("file.txt")
+      var position = 0
+      val personToEdit = Person(name, temp, sex, address)
+      try{
+        val fileLenght = file.lines().mkString.length
+        var offset = 0
+        for( line <- file.lines()){
+          var currentLineResult = ""
+          println(line)
+          if ( position + line.length <= fileLenght){
+            currentLineResult = findMatch( line, personToEdit)}
+          else{
+            val linesubstring = line.substring(0, (line.length - offset))
+            if ( linesubstring.isEmpty == false)
+              currentLineResult = findMatch ( line.substring(0, (line.length-offset)), personToEdit )}
+          if ( currentLineResult.isEmpty){
+            position = position + line.length + 2
+          }
+          else {
+
+            if (newAge.isEmpty ){
+              temporary = -1
+            }
+            else  {
+              try {
+                personAge =newAge.toInt
+              } catch {
+                case ex: NumberFormatException =>{
+                  personAge = -1
+                }
+              }
+            }
+            if (personAge < 0 ){
+              <p>"new Age parameter must be a number higher or equal 0") </p>
+            } else {
+              if (temporary == 0){
+                temporary = newAge.toInt
+              }
+              val newLine =  editPerson(line , Person(newName, temporary, newSex, newAddress))
+              if ( newLine.length > line.length)
+                offset = offset + (newLine.length - line.length)
+              file.patch(position  , newLine , OverwriteSome(line.length))
+              file.string
+              position = position + newLine.length + 2
+            }
+          }
+        }
+        val source = scala.io.Source.fromFile("file.txt")
+        val lines = source.mkString
+        source.close()
+        lines.toString
+      }
+    }
+  }
+
+  def toJson(person :Person) : String = {
+    "{\"name\":\"%s\",\"age\":%s,\"sex\":\"%s\",\"address\":\"%s\"}".format(person.name , person.age, person.sex, person.address)
+  }
 
   def editPerson(line : String ,  personToEdit : Person ) : String = {
-    var currentLine =  parse(line).convertTo[Person]
+    var currentLine =  parse(line , true).extract[Person]
     println(personToEdit)
     var name = personToEdit.name
     var age = personToEdit.age
@@ -376,8 +370,9 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
     if (personToEdit.address.isEmpty  ){
        address = currentLine.address
     }
-    PersonFormat.write(Person(name, age, sex, address)).toString()
+    //PersonFormat.write(Person(name, age, sex, address)).toString()
+    toJson(Person(name, age, sex, address))
   }
-*/
+
 
 }
