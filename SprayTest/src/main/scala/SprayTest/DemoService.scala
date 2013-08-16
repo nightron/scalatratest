@@ -112,7 +112,7 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
         </head>
         <body>
           <h1>Remove from file</h1>
-          <form name="input" action="/plik/remove" method="post" >
+          <form name="input" action="/plik/remove/" method="delete" >
             <div id ="formWrapper">
 
               <label for="user"> Username: </label>
@@ -226,7 +226,7 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
         }
       }
       if(personAge < 0 )
-        <p>Bad Request</p>
+        NotAcceptable("Age must be a number equal or higher than 0")
       else{
         val person: Person = Person(name.toLowerCase , personAge, gender, address)
         if (findIfNameIsUnique(Person(name,-1,"",""))){
@@ -314,9 +314,9 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
     val newGender = newSex.toLowerCase
     if(personAge < 0 | !(gender.equals("male") | gender.equals("female") | gender.isEmpty) | !(newGender.equals("male") | newGender.equals("female") | newGender.isEmpty))
       if (personAge < 0)
-        <p>"Age must be a number higher or equal 0"</p>
+        NotAcceptable("Age must be a number higher or equal 0")
       else
-        <p>"Wrong sex parameter use \"male\" or \"female\""</p>
+        NotAcceptable("Wrong sex parameter use \"male\" or \"female\"")
     else if (findIfNameIsUnique(Person(newName,-1, "", ""))){
       if (temp == 0){
         temp = age.toInt
@@ -355,7 +355,7 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
               }
             }
             if (personAge < 0 ){
-              <p>"new Age parameter must be a number higher or equal 0") </p>
+              NotAcceptable("new Age parameter must be a number higher or equal 0")
             } else {
               if (temporary == 0){
                 temporary = newAge.toInt
