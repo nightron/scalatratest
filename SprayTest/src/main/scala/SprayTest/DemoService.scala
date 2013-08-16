@@ -107,45 +107,101 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
     get("/plik/removeName"){
       contentType="text/html"
       <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
+        <head>
+          <link type="text/css" href="\mystyle.css" rel="stylesheet"></link>
+        </head>
         <body>
           <h1>Remove from file</h1>
-          <form name="input" action="/plik/remove" method="delete" />
-          Username: <input type="text" name="user" />
-          <input type="submit" value="Submit" />
+          <form name="input" action="/plik/remove" method="post" >
+            <div id ="formWrapper">
+
+              <label for="user"> Username: </label>
+              <input type="text" placeholder ="Username" name="user" />
+              <br/>
+
+              <input type="submit" value="Remove" />
+            </div>
+          </form>
         </body>
       </html>
     }
     get("/plik/findBy"){
       contentType="text/html"
       <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
+        <head>
+          <link type="text/css" href="\mystyle.css" rel="stylesheet" ></link>
+        </head>
         <body>
           <h1>Find by </h1>
-          <form name="input" action="/plik/find" method="get" />
-          Name: <input type="text" name="name" /> <br/>
-          Age: <input type="text" name="age" /> <br/>
-          Sex: <input type="text" name="sex" /> <br/>
-          Address: <input type="text" name="address" /> <br/>
-          <input type="submit" value="Find" />
-          <br/>
+          <form name="input" action="/plik/find" method="get">
+            <div id ="formWrapper">
+
+              <label for="name">Name:</label>
+              <input type="text" placeholder="Name" name="name" />
+              <br/>
+
+              <label for="age">Age:</label>
+              <input type="text" placeholder="age" name="age" />
+              <br/>
+
+              <label for="sex">Sex:</label>
+              <input type="text" placeholder="sex" name="sex" />
+              <br/>
+
+              <label for="address">Address:</label>
+              <input type="text" placeholder="address" name="address" />
+              <br/>
+
+              <input type="submit" value="Find" />
+              <br/>
+            </div>
+          </form>
         </body>
       </html>
     }
     get("/plik/edit"){
       contentType="text/html"
       <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
+        <head>
+          <link type ="text/css" href="\mystyle2.css" rel="stylesheet"></link>
+        </head>
         <body>
           <h1>Find record you want to edit </h1>
-          <form name="input" action="/plik/edite" method="post" />
-          Name: <input type="text" name="name" />
-          New Name: <input type="text" name="newName" /> <br/>
-          Age: <input type="text" name="age" />
-          New Age: <input type="text" name="newAge" /><br/>
-          Sex: <input type="text" name="sex" />
-          New Sex: <input type="text" name="newSex" /><br/>
-          Address: <input type="text" name="address" />
-          New Address: <input type="text" name="newAddress" /><br/>
-          <input type="submit" value="Find" />
-          <br/>
+          <form name="input" action="/plik/edite" method="post">
+            <div id="formWrapper">
+
+              <label for="name">Name:</label>
+              <input type="text" placeholder="name" name="name" />
+
+              <label for="newName" > New Name:</label>
+              <input type="text" placeholder="new Name" name="newName" />
+              <br/>
+
+              <label for="age" > Age:</label>
+              <input type="text" placeholder="age" name="age" />
+
+              <label for="newAge"  > New Age  :</label>
+              <input type="text" placeholder="new age" name="newAge" />
+              <br/>
+
+              <label for="sex">Sex:</label>
+              <input type="text" placeholder="sex" name="sex" />
+
+              <label for="newSex">New sex:</label>
+              <input type="text" placeholder="new sex" name="newSex" />
+              <br/>
+
+              <label for="address">Address:</label>
+              <input type="text" placeholder="address" name="address" />
+
+              <label for="newAddress">New Address:</label>
+              <input type="text" placeholder="new Address" name="newAddress" />
+              <br/>
+
+              <input type="submit" value="Edit" />
+              <br/>
+            </div>
+          </form>
         </body>
       </html>
     }
@@ -172,14 +228,16 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
       if(personAge < 0 )
         <p>Bad Request</p>
       else{
-        val person: Person = Person(name , personAge, gender, address)
-        println(toJson(person))
-        val file: Seekable =  Resource.fromFile("file.txt")
-        file.append("\n" + toJson(person))
-        val source = scala.io.Source.fromFile("file.txt")
-        val lines = source.mkString
-        source.close()
-        lines.toString
+        val person: Person = Person(name.toLowerCase , personAge, gender, address)
+        if (findIfNameIsUnique(Person(name,-1,"",""))){
+          val file: Seekable =  Resource.fromFile("file.txt")
+          file.append("\n" + toJson(person))
+          val source = scala.io.Source.fromFile("file.txt")
+          val lines = source.mkString
+          source.close()
+          lines.toString
+        } else
+          NotAcceptable("Name must be unique")
       }
     }
   }
@@ -227,31 +285,6 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
     source.close()
     lines.toString
   }
-
-  def findMatch(line : String ,  personToFind : Person ) : String = {
-
-    var currentLine =  parse(line , true).extract[Person]
-    var currentLineResult =  line + "\n"
-    if (personToFind.name == "" ){
-    }
-    else if (currentLine.name != personToFind.name)
-      currentLineResult =""
-    if (personToFind.age ==  -1 ) {
-    }
-    else if(currentLine.age != personToFind.age)
-      currentLineResult =""
-    if (personToFind.sex == ""  ){
-    }
-    else if (currentLine.sex != personToFind.sex)
-      currentLineResult = ""
-    if (personToFind.address == ""  ){
-    }
-    else if (currentLine.address != personToFind.address)
-      currentLineResult =""
-
-    currentLineResult
-
-  }
   post("/plik/edite"){
 
     var name = params.get("name").get
@@ -284,7 +317,7 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
         <p>"Age must be a number higher or equal 0"</p>
       else
         <p>"Wrong sex parameter use \"male\" or \"female\""</p>
-    else{
+    else if (findIfNameIsUnique(Person(newName,-1, "", ""))){
       if (temp == 0){
         temp = age.toInt
       }
@@ -341,7 +374,47 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
         source.close()
         lines.toString
       }
+    }  else{
+      NotAcceptable("New name must be unique")
     }
+  }
+  get("/mystyle.css"){
+    val source = scala.io.Source.fromFile("mystyle.css")
+    val lines = source.mkString
+    source.close
+    lines
+  }
+  get("/mystyle2.css"){
+    val source = scala.io.Source.fromFile("mystyle2.css")
+    val lines = source.mkString
+    source.close
+    lines
+  }
+
+
+  def findMatch(line : String ,  personToFind : Person ) : String = {
+
+    var currentLine =  parse(line , true).extract[Person]
+    var currentLineResult =  line + "\n"
+    if (personToFind.name == "" ){
+    }
+    else if (currentLine.name != personToFind.name)
+      currentLineResult =""
+    if (personToFind.age ==  -1 ) {
+    }
+    else if(currentLine.age != personToFind.age)
+      currentLineResult =""
+    if (personToFind.sex == ""  ){
+    }
+    else if (currentLine.sex != personToFind.sex)
+      currentLineResult = ""
+    if (personToFind.address == ""  ){
+    }
+    else if (currentLine.address != personToFind.address)
+      currentLineResult =""
+
+    currentLineResult
+
   }
 
   def toJson(person :Person) : String = {
@@ -370,9 +443,16 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
     if (personToEdit.address.isEmpty  ){
        address = currentLine.address
     }
-    //PersonFormat.write(Person(name, age, sex, address)).toString()
     toJson(Person(name, age, sex, address))
   }
 
-
+  def findIfNameIsUnique (personToFind: Person) : Boolean = {
+    var isUnique = true
+    val source = scala.io.Source.fromFile("file.txt")
+    for( line <- source.getLines()){
+      if ( !(findMatch(line, personToFind).isEmpty))
+        isUnique = false
+    }
+    isUnique
+  }
 }
