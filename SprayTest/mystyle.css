@@ -27,3 +27,10 @@ color : lightgray;
 font-weight: bold;
 cursor : pointer;
 }
+ div.centre
+ {
+   width: 400px;
+   display: block;
+   margin-left: auto;
+   margin-right: auto;
+ }
