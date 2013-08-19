@@ -1,3 +1,4 @@
+
 import java.io.File
 import org.codehaus.jackson.map.ObjectMapper
 import scala.concurrent.duration._
@@ -13,10 +14,10 @@ import scala.util.parsing.json.JSONObject
 import scalax.io._
 
 class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
-  with SwaggerSupport
-  with ScalateSupport
-  with NativeJsonSupport
-  with MethodOverride{
+with SwaggerSupport
+with ScalateSupport
+with NativeJsonSupport
+with MethodOverride{
 
   protected implicit val jsonFormats: Formats = DefaultFormats
   override protected val applicationName: Option[String] = Some("file")
@@ -35,23 +36,23 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
       .notes("Show all possibilities that user can use"))
 
 
-   get("/index", operation(showIndex)) {
-     contentType="text/html"
-     <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
-       <body>
-         <h1>Say hello to <i>spray-routing</i> on <i>spray-can</i>!</h1>
-         <p>Defined resources:</p>
-         <ul>
-           <li><a href="/file/plik">/plik</a></li>
-           <li><a href="/file/stats">/stats</a></li>
-           <li><a href="/file/timeout">/timeout</a></li>
-           <li><a href="/file/crash">/crash</a></li>
-           <li><a href="/file/fail">/fail</a></li>
-           <li><a href="/file/stop?method=post">/stop</a></li>
-         </ul>
-       </body>
-     </html>
-    }
+  get("/index", operation(showIndex)) {
+    contentType="text/html"
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
+      <body>
+        <h1>Say hello to <i>spray-routing</i> on <i>spray-can</i>!</h1>
+        <p>Defined resources:</p>
+        <ul>
+          <li><a href="/file/plik">/plik</a></li>
+          <li><a href="/file/stats">/stats</a></li>
+          <li><a href="/file/timeout">/timeout</a></li>
+          <li><a href="/file/crash">/crash</a></li>
+          <li><a href="/file/fail">/fail</a></li>
+          <li><a href="/file/stop?method=post">/stop</a></li>
+        </ul>
+      </body>
+    </html>
+  }
 
   val showFileOperations =
     (apiOperation[String]("showFileOperations")
@@ -59,188 +60,188 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
       notes   "Displays page with links leading to diffrent forms which grant various results, such as" +
       "displaying file, adding entries, finding entry, removing records and obviously adding one")
 
-   get("/plik", operation(showFileOperations)) {
-     contentType="text/html"
-     <html >
+  get("/plik", operation(showFileOperations)) {
+    contentType="text/html"
+    <html >
 
-       <body>
-         <h1>Say hello to <i>spray-can</i>!</h1>
-         <p>Defined operations:</p>
-         <ul>
-           <li><a href="/file/plik/open">/Display file</a></li>
-           <li><a href="/file/plik/addingName">/Add record</a></li>
-           <li><a href="/file/plik/findBy">/Find by</a></li>
-           <li><a href="/file/plik/edit">/Edit record</a></li>
-           <li><a href="/file/plik/removeName">/Remove record</a></li>
-         </ul>
-       </body>
-     </html>
-    }
+      <body>
+        <h1>Say hello to <i>spray-can</i>!</h1>
+        <p>Defined operations:</p>
+        <ul>
+          <li><a href="/file/plik/open">/Display file</a></li>
+          <li><a href="/file/plik/addingName">/Add record</a></li>
+          <li><a href="/file/plik/findBy">/Find by</a></li>
+          <li><a href="/file/plik/edit">/Edit record</a></li>
+          <li><a href="/file/plik/removeName">/Remove record</a></li>
+        </ul>
+      </body>
+    </html>
+  }
 
   val showFileContents =
     (apiOperation[String]("showFileContents")
       summary "Shows json contents"
       notes   "Displays whole json content in form of String")
 
-    get("/plik/open", operation(showFileContents)) {
-      val source = scala.io.Source.fromFile("file.txt")
-      var lines = source.mkString
-      source.close()
-     lines
-    }
+  get("/plik/open", operation(showFileContents)) {
+    val source = scala.io.Source.fromFile("file.txt")
+    var lines = source.mkString
+    source.close()
+    lines
+  }
 
   val showAddingEntryForm =
     (apiOperation[String]("showAddingEntryForm")
       summary "Show form for adding entries"
       notes   "Shows form which asks for Name, Age, Sex and Address of client")
-    get("/plik/addingName", operation(showAddingEntryForm)) {
-      contentType="text/html"
-      <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
-        <head>
-          <link rel="stylesheet" type="text/css" href="/file/mystyle.css" ></link>
-        </head>
-        <body>
-          <h1>Add to file</h1>
-          <form name="input" action="/file/plik/append" method="post">
-            <div id ="formWrapper">
-              <label for="firstname">First name</label>
-              <input type ="text" placeholder="First name" name="firstname"></input>
-              <br/>
+  get("/plik/addingName", operation(showAddingEntryForm)) {
+    contentType="text/html"
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
+      <head>
+        <link rel="stylesheet" type="text/css" href="/file/mystyle.css" ></link>
+      </head>
+      <body>
+        <h1>Add to file</h1>
+        <form name="input" action="/file/plik/append" method="post">
+          <div id ="formWrapper">
+            <label for="firstname">First name</label>
+            <input type ="text" placeholder="First name" name="firstname"></input>
+            <br/>
 
-              <label for="age">Age</label>
-              <input type ="text" placeholder="Age" name="age" ></input>
-              <br/>
+            <label for="age">Age</label>
+            <input type ="text" placeholder="Age" name="age" ></input>
+            <br/>
 
-              <label for="sex">Sex</label>
-              <input type ="text" placeholder="Male" name="sex" ></input>
-              <br/>
+            <label for="sex">Sex</label>
+            <input type ="text" placeholder="Male" name="sex" ></input>
+            <br/>
 
-              <label for="address">Address</label>
-              <input type ="text" placeholder="Address" name="address" ></input>
-              <br/>
+            <label for="address">Address</label>
+            <input type ="text" placeholder="Address" name="address" ></input>
+            <br/>
 
-              <input type="submit" value="Submit"></input>
+            <input type="submit" value="Submit"></input>
 
-              <br/>
+            <br/>
 
-            </div>
-          </form>
-        </body>
-      </html>
-    }
+          </div>
+        </form>
+      </body>
+    </html>
+  }
   val showRemovingEntryForm =
     (apiOperation[String]("showRemovingEntryForm")
       summary "Show form for deleting entries"
       notes   "Shows form which asks for Username")
-    get("/plik/removeName"){
-      contentType="text/html"
-      <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
-        <head>
-          <link type="text/css" href="/file/mystyle.css" rel="stylesheet"></link>
-        </head>
-        <body>
-          <h1>Remove from file</h1>
-          <form name="input" action="/file/plik/remove" method="delete" >
-            <div id ="formWrapper">
+  get("/plik/removeName"){
+    contentType="text/html"
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
+      <head>
+        <link type="text/css" href="/file/mystyle.css" rel="stylesheet"></link>
+      </head>
+      <body>
+        <h1>Remove from file</h1>
+        <form name="input" action="/file/plik/remove" method="delete" >
+          <div id ="formWrapper">
 
-              <label for="user"> Username: </label>
-              <input type="text" placeholder ="Username" name="user" />
-              <br/>
+            <label for="user"> Username: </label>
+            <input type="text" placeholder ="Username" name="user" />
+            <br/>
 
-              <input type="submit" value="Remove" />
-            </div>
-          </form>
-        </body>
-      </html>
-    }
+            <input type="submit" value="Remove" />
+          </div>
+        </form>
+      </body>
+    </html>
+  }
   val showFindingEntryForm =
     (apiOperation[String]("showFindingEntryForm")
       summary "Shows form for finding entries"
       notes   "Shows form which asks for Name, Age, Sex and Address of client")
-    get("/plik/findBy", operation(showFindingEntryForm)){
-      contentType="text/html"
-      <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
-        <head>
-          <link type="text/css" href="/file/mystyle.css" rel="stylesheet" ></link>
-        </head>
-        <body>
-          <h1>Find by </h1>
-          <form name="input" action="/file/plik/find" method="get">
-            <div id ="formWrapper">
+  get("/plik/findBy", operation(showFindingEntryForm)){
+    contentType="text/html"
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
+      <head>
+        <link type="text/css" href="/file/mystyle.css" rel="stylesheet" ></link>
+      </head>
+      <body>
+        <h1>Find by </h1>
+        <form name="input" action="/file/plik/find" method="get">
+          <div id ="formWrapper">
 
-              <label for="name">Name:</label>
-              <input type="text" placeholder="Name" name="name" />
-              <br/>
+            <label for="name">Name:</label>
+            <input type="text" placeholder="Name" name="name" />
+            <br/>
 
-              <label for="age">Age:</label>
-              <input type="text" placeholder="age" name="age" />
-              <br/>
+            <label for="age">Age:</label>
+            <input type="text" placeholder="age" name="age" />
+            <br/>
 
-              <label for="sex">Sex:</label>
-              <input type="text" placeholder="sex" name="sex" />
-              <br/>
+            <label for="sex">Sex:</label>
+            <input type="text" placeholder="sex" name="sex" />
+            <br/>
 
-              <label for="address">Address:</label>
-              <input type="text" placeholder="address" name="address" />
-              <br/>
+            <label for="address">Address:</label>
+            <input type="text" placeholder="address" name="address" />
+            <br/>
 
-              <input type="submit" value="Find" />
-              <br/>
-            </div>
-          </form>
-        </body>
-      </html>
-    }
+            <input type="submit" value="Find" />
+            <br/>
+          </div>
+        </form>
+      </body>
+    </html>
+  }
   val showEditingEntryForm =
     (apiOperation[String]("showEditingEntryForm")
       summary "Shows form for editing entries"
       notes   "Shows form which asks for Name, Age, Sex and Address of client")
-    get("/plik/edit"){
-      contentType="text/html"
-      <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
-        <head>
-          <link type ="text/css" href="/file/mystyle2.css" rel="stylesheet"></link>
-        </head>
-        <body>
-          <h1>Find record you want to edit </h1>
-          <form name="input" action="/file/plik/edite" method="post">
-            <div id="formWrapper">
+  get("/plik/edit"){
+    contentType="text/html"
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
+      <head>
+        <link type ="text/css" href="/file/mystyle2.css" rel="stylesheet"></link>
+      </head>
+      <body>
+        <h1>Find record you want to edit </h1>
+        <form name="input" action="/file/plik/edite" method="post">
+          <div id="formWrapper">
 
-              <label for="name">Name:</label>
-              <input type="text" placeholder="name" name="name" />
+            <label for="name">Name:</label>
+            <input type="text" placeholder="name" name="name" />
 
-              <label for="newName" > New Name:</label>
-              <input type="text" placeholder="new Name" name="newName" />
-              <br/>
+            <label for="newName" > New Name:</label>
+            <input type="text" placeholder="new Name" name="newName" />
+            <br/>
 
-              <label for="age" > Age:</label>
-              <input type="text" placeholder="age" name="age" />
+            <label for="age" > Age:</label>
+            <input type="text" placeholder="age" name="age" />
 
-              <label for="newAge"  > New Age  :</label>
-              <input type="text" placeholder="new age" name="newAge" />
-              <br/>
+            <label for="newAge"  > New Age  :</label>
+            <input type="text" placeholder="new age" name="newAge" />
+            <br/>
 
-              <label for="sex">Sex:</label>
-              <input type="text" placeholder="sex" name="sex" />
+            <label for="sex">Sex:</label>
+            <input type="text" placeholder="sex" name="sex" />
 
-              <label for="newSex">New sex:</label>
-              <input type="text" placeholder="new sex" name="newSex" />
-              <br/>
+            <label for="newSex">New sex:</label>
+            <input type="text" placeholder="new sex" name="newSex" />
+            <br/>
 
-              <label for="address">Address:</label>
-              <input type="text" placeholder="address" name="address" />
+            <label for="address">Address:</label>
+            <input type="text" placeholder="address" name="address" />
 
-              <label for="newAddress">New Address:</label>
-              <input type="text" placeholder="new Address" name="newAddress" />
-              <br/>
+            <label for="newAddress">New Address:</label>
+            <input type="text" placeholder="new Address" name="newAddress" />
+            <br/>
 
-              <input type="submit" value="Edit" />
-              <br/>
-            </div>
-          </form>
-        </body>
-      </html>
-    }
+            <input type="submit" value="Edit" />
+            <br/>
+          </div>
+        </form>
+      </body>
+    </html>
+  }
   val appendEntry =
     (apiOperation[Person]("appendEntry")
       summary "Append entry based on form input"
@@ -298,7 +299,7 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
   get("/plik/find", operation(findEntry)){
     var name = params.get("name").get
     var age = params.get("age").get
-    var sex = params.get("sex").get
+    var sex = params.get("sex").get.toLowerCase
     var address = params.get("address").get
 
     var temp = 0
@@ -323,7 +324,7 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
 
   val removeEntry =
     (apiOperation[Person]("removeEntry")
-      summary "REmove entry based on form input"
+      summary "Removing entry based on form input"
       parameters(
       pathParam[String]("user").description("Name of customer")
       ))
@@ -335,10 +336,11 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
     try{
       for ( line <- file.lines()){
         if (parse(line , true).extract[Person].name.equals(nameToRemove)){
-          file.patch(position, "", OverwriteSome(line.length))
+          file.patch(position, "", OverwriteSome(line.length+1))
+          println(line.length)
           println(line)
         }  else {
-          position = position + line.length
+          position = position + line.length + 1
         }
       }
     }
@@ -366,11 +368,12 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
     var newName = params.get("newName").get
     var age = params.get("age").get
     var newAge = params.get("newAge").get
-    var sex = params.get("sex").get
-    var newSex = params.get("newSex").get
+    var sex = params.get("sex").get.toLowerCase
+    var newSex = params.get("newSex").get.toLowerCase
     var address = params.get("address").get
     var newAddress = params.get("newAddress").get
 
+    println(newName == "")
     var temp = 0
     var personAge = 0
     if (age.isEmpty ){
@@ -392,7 +395,7 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
         NotAcceptable("Age must be a number higher or equal 0")
       else
         NotAcceptable("Wrong sex parameter use \"male\" or \"female\"")
-    else if (findIfNameIsUnique(Person(newName,-1, "", ""))){
+    else if (newName == "" | findIfNameIsUnique(Person(newName,-1, "", "")) ){
       if (temp == 0){
         temp = age.toInt
       }
@@ -518,17 +521,17 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
     //var string =""
     println(personToEdit)
     if (personToEdit.name.isEmpty ){
-       name = currentLine.name
+      name = currentLine.name
     }
     if (personToEdit.age ==  -1 ) {
-       age = currentLine.age
+      age = currentLine.age
     }
     if (personToEdit.sex.isEmpty  ){
-       sex = currentLine.sex
-       println("Edit person" + currentLine)
+      sex = currentLine.sex
+      println("Edit person" + currentLine)
     }
     if (personToEdit.address.isEmpty  ){
-       address = currentLine.address
+      address = currentLine.address
     }
     toJson(Person(name, age, sex, address))
   }
@@ -543,3 +546,4 @@ class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
     isUnique
   }
 }
+
