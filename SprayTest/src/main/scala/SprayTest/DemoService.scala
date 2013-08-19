@@ -144,7 +144,7 @@ with MethodOverride{
       <body>
         <div class="centre">
         <h1>Remove from file</h1>
-        <form name="input" action="/file/plik/remove" method="delete" >
+        <form name="input" action="/file/plik/remove" method="post" >
           <div id ="formWrapper">
 
             <label for="user"> Username: </label>
@@ -211,7 +211,7 @@ with MethodOverride{
       <body>
         <div class ="centre">
           <h1>Find record you want to edit </h1>
-          <form name="input" action="/file/plik/edite" method="put" align="center">
+          <form name="input" action="/file/plik/edite" method="post" align="center">
             <div id="formWrapper">
               <table align="center">
                 <tr>
@@ -357,18 +357,18 @@ with MethodOverride{
       pathParam[String]("user").description("Name of customer")
       ))
 
-  get("/plik/remove", operation(removeEntry)){
+  post("/plik/remove", operation(removeEntry)){
     val nameToRemove = params.get("user").get
     val file: Seekable =  Resource.fromFile(new File("file.txt"))
     var position = 0
     try{
       for ( line <- file.lines()){
         if (parse(line , true).extract[Person].name.equals(nameToRemove)){
-          file.patch(position, "", OverwriteSome(line.length+1))
+          file.patch(position, "", OverwriteSome(line.length+2))
           println(line.length)
           println(line)
         }  else {
-          position = position + line.length + 1
+          position = position + line.length + 2
         }
       }
     }
@@ -390,6 +390,7 @@ with MethodOverride{
       pathParam[String]("address").description("Address of customer"),
       pathParam[String]("newAddress").description("New Address of customer")
       ))
+
   post("/plik/edite", operation(editEntry)){
 
     var name = params.get("name").get
