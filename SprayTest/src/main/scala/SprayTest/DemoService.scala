@@ -101,6 +101,7 @@ with MethodOverride{
         <link rel="stylesheet" type="text/css" href="/file/mystyle.css" ></link>
       </head>
       <body>
+        <div class="centre">
         <h1>Add to file</h1>
         <form name="input" action="/file/plik/append" method="post">
           <div id ="formWrapper">
@@ -126,6 +127,7 @@ with MethodOverride{
 
           </div>
         </form>
+        </div>
       </body>
     </html>
   }
@@ -133,13 +135,14 @@ with MethodOverride{
     (apiOperation[String]("showRemovingEntryForm")
       summary "Show form for deleting entries"
       notes   "Shows form which asks for Username")
-  get("/plik/removeName"){
+  get("/plik/removeName", operation(showRemovingEntryForm)){
     contentType="text/html"
     <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
       <head>
         <link type="text/css" href="/file/mystyle.css" rel="stylesheet"></link>
       </head>
       <body>
+        <div class="centre">
         <h1>Remove from file</h1>
         <form name="input" action="/file/plik/remove" method="delete" >
           <div id ="formWrapper">
@@ -151,6 +154,7 @@ with MethodOverride{
             <input type="submit" value="Remove" />
           </div>
         </form>
+        </div>
       </body>
     </html>
   }
@@ -165,6 +169,7 @@ with MethodOverride{
         <link type="text/css" href="/file/mystyle.css" rel="stylesheet" ></link>
       </head>
       <body>
+        <div class ="centre">
         <h1>Find by </h1>
         <form name="input" action="/file/plik/find" method="get">
           <div id ="formWrapper">
@@ -189,6 +194,7 @@ with MethodOverride{
             <br/>
           </div>
         </form>
+        </div>
       </body>
     </html>
   }
@@ -196,49 +202,65 @@ with MethodOverride{
     (apiOperation[String]("showEditingEntryForm")
       summary "Shows form for editing entries"
       notes   "Shows form which asks for Name, Age, Sex and Address of client")
-  get("/plik/edit"){
+  get("/plik/edit", operation(showEditingEntryForm)){
     contentType="text/html"
     <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
       <head>
         <link type ="text/css" href="/file/mystyle2.css" rel="stylesheet"></link>
       </head>
       <body>
-        <h1>Find record you want to edit </h1>
-        <form name="input" action="/file/plik/edite" method="post">
-          <div id="formWrapper">
-
-            <label for="name">Name:</label>
-            <input type="text" placeholder="name" name="name" />
-
-            <label for="newName" > New Name:</label>
-            <input type="text" placeholder="new Name" name="newName" />
-            <br/>
-
-            <label for="age" > Age:</label>
-            <input type="text" placeholder="age" name="age" />
-
-            <label for="newAge"  > New Age  :</label>
-            <input type="text" placeholder="new age" name="newAge" />
-            <br/>
-
-            <label for="sex">Sex:</label>
-            <input type="text" placeholder="sex" name="sex" />
-
-            <label for="newSex">New sex:</label>
-            <input type="text" placeholder="new sex" name="newSex" />
-            <br/>
-
-            <label for="address">Address:</label>
-            <input type="text" placeholder="address" name="address" />
-
-            <label for="newAddress">New Address:</label>
-            <input type="text" placeholder="new Address" name="newAddress" />
-            <br/>
-
-            <input type="submit" value="Edit" />
-            <br/>
-          </div>
-        </form>
+        <div class ="centre">
+          <h1>Find record you want to edit </h1>
+          <form name="input" action="/file/plik/edite" method="put" align="center">
+            <div id="formWrapper">
+              <table align="center">
+                <tr>
+                  <td>
+                    <label for="name">Name:</label>
+                    <input type="text" placeholder="name" name="name" />
+                  </td>
+                  <td>
+                    <label for="newName" > New Name:</label>
+                    <input type="text" placeholder="new Name" name="newName" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <label for="age" > Age:</label>
+                    <input type="text" placeholder="age" name="age" />
+                  </td>
+                  <td>
+                    <label for="newAge"  > New Age  :</label>
+                    <input type="text" placeholder="new age" name="newAge" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <label for="sex">Sex:</label>
+                    <input type="text" placeholder="sex" name="sex" />
+                  </td>
+                  <td>
+                    <label for="newSex">New sex:</label>
+                    <input type="text" placeholder="new sex" name="newSex" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <label for="address">Address:</label>
+                    <input type="text" placeholder="address" name="address" />
+                  </td>
+                  <td>
+                    <label for="newAddress">New Address:</label>
+                    <input type="text" placeholder="new Address" name="newAddress" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>  <input type="submit" value="Edit" />   </td>
+                </tr>
+              </table>
+            </div>
+          </form>
+        </div>
       </body>
     </html>
   }
@@ -463,24 +485,14 @@ with MethodOverride{
     }
   }
 
-  val getStyle =
-    (apiOperation[String]("getStyle")
-      summary "Shows content of CSS file"
-      notes   "Lets end user for quick check of css file")
-
-  get("/mystyle.css", operation(getStyle)){
+  get("/mystyle.css"){
     val source = scala.io.Source.fromFile("mystyle.css")
     val lines = source.mkString
     source.close
     lines
   }
 
-  val getStyle2 =
-    (apiOperation[String]("getStyle2")
-      summary "Shows content of CSS file"
-      notes   "Lets end user for quick check of css file")
-
-  get("/mystyle2.css", operation(getStyle2)){
+  get("/mystyle2.css"){
     val source = scala.io.Source.fromFile("mystyle2.css")
     val lines = source.mkString
     source.close
