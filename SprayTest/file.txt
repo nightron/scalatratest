@@ -3,5 +3,4 @@
 {"name":"tomasz","age":22,"sex":"male","address":"Jakistam2"}
 {"name":"daniel","age":44,"sex":"male","address":"Jakistam3"}
 {"name":"ala","age":44,"sex":"female","address":"Jakistam4"}
-{"name":"makota","age":33,"sex":"female","address":"Jakistam4"}
-{"name":"kota","age":2,"sex":"female","address":"Jakistam4"}
+{"name":"rupert","age":33,"sex":"female","address":"Jakistam4"}
