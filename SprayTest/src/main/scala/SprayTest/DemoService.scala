@@ -527,13 +527,17 @@ with MethodOverride{
       NotAcceptable("New name must be unique")
     }
   }
-  // komenda wykonujaca w CURLU
+  // komenda CURLowa
   // curl -X PUT --data test="variable" http://localhost:8080/file/test
   put("/test") {
     if (!params.contains("test")) halt (400, "test was missing\n")
     params.get("test").get
   }
-
+  // komenda CURLowa
+  // curl -X DELETE http://localhost:8080/proba
+  delete("/proba") {
+     "BRIAMBORIAKI"
+  }
   /**
    * Adding styles to server
    */
