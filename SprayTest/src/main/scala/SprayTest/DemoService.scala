@@ -24,7 +24,7 @@ with NativeJsonSupport
 with MethodOverride{
 
   protected implicit val jsonFormats: Formats = DefaultFormats
-  override protected val applicationName: Option[String] = Some("file")   // pre-fix for all rou
+  override protected val applicationName: Option[String] = Some("file")   // pre-fix for all routes
   protected val applicationDescription: String = "File Processing Api. It allows to use file to store data about client, process and browse this data "
 
 
@@ -299,7 +299,7 @@ with MethodOverride{
       summary "Append entry based on form input"
       parameters(
       pathParam[String]("firstname").description("Name of customer"),
-      pathParam[String]("age").description("Age of customer"),
+      pathParam[Integer]("age").description("Age of customer"),
       pathParam[String]("sex").description("Sex of customer"),
       pathParam[String]("address").description("Address of customer")
       ))
@@ -404,7 +404,7 @@ with MethodOverride{
           println(line.length)
           println(line)
         }  else {
-          position = position + line.length + 2
+          position = position + line.length + 1
         }
       }
     }
@@ -527,6 +527,12 @@ with MethodOverride{
       NotAcceptable("New name must be unique")
     }
   }
+  // komenda wykonujaca w CURLU
+  // curl -X PUT --data test="variable" http://localhost:8080/file/test
+  put("/test") {
+    if (!params.contains("test")) halt (400, "test was missing\n")
+    params.get("test").get
+  }
 
   /**
    * Adding styles to server
@@ -543,6 +549,15 @@ with MethodOverride{
     val lines = source.mkString
     source.close
     lines
+  }
+  notFound {
+    // remove content type in case it was set through an action
+    contentType = null
+    // Try to render a ScalateTemplate if no route matched
+    findTemplate(requestPath) map { path =>
+      contentType = "text/html"
+      layoutTemplate(path)
+    } orElse serveStaticResource() getOrElse resourceNotFound()
   }
 
   /**
