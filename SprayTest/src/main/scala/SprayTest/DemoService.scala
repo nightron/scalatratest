@@ -13,6 +13,10 @@ import org.scalatra.json._
 import scala.util.parsing.json.JSONObject
 import scalax.io._
 
+/**
+ * Class responsible for handling HTTP requests for our REST application
+ * @param swagger
+ */
 class DemoService (implicit val swagger: Swagger) extends ScalatraServlet
 with SwaggerSupport
 with ScalateSupport
@@ -20,7 +24,7 @@ with NativeJsonSupport
 with MethodOverride{
 
   protected implicit val jsonFormats: Formats = DefaultFormats
-  override protected val applicationName: Option[String] = Some("file")
+  override protected val applicationName: Option[String] = Some("file")   // pre-fix for all routes
   protected val applicationDescription: String = "File Processing Api. It allows to use file to store data about client, process and browse this data "
 
 
@@ -29,7 +33,9 @@ with MethodOverride{
     response.headers += ("Access-Control-Allow-Origin" -> "*")
   }
 
-
+/**
+ * Method responsible for showing main page content
+ */
   val showIndex =
     (apiOperation[String]("showIndex")
       .summary("Show available pages")
@@ -40,20 +46,22 @@ with MethodOverride{
     contentType="text/html"
     <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl" >
       <body>
-        <h1>Say hello to <i>spray-routing</i> on <i>spray-can</i>!</h1>
+        <h1>SAY <strong>HELLO</strong> to my beautiful app in <i>Scalatra</i> </h1>
         <p>Defined resources:</p>
         <ul>
           <li><a href="/file/plik">/plik</a></li>
-          <li><a href="/file/stats">/stats</a></li>
+     <!--     <li><a href="/file/stats">/stats</a></li>
           <li><a href="/file/timeout">/timeout</a></li>
           <li><a href="/file/crash">/crash</a></li>
           <li><a href="/file/fail">/fail</a></li>
-          <li><a href="/file/stop?method=post">/stop</a></li>
+          <li><a href="/file/stop?method=post">/stop</a></li>     -->
         </ul>
       </body>
     </html>
   }
-
+  /**
+   * method responsible fo showing file operations webpage content + its swagger
+   */
   val showFileOperations =
     (apiOperation[String]("showFileOperations")
       summary "Show possible actions which can be used on file"
@@ -78,6 +86,9 @@ with MethodOverride{
     </html>
   }
 
+/**
+  * Method responsible for displaying file content (in this case it's json)
+  */
   val showFileContents =
     (apiOperation[String]("showFileContents")
       summary "Shows json contents"
@@ -90,6 +101,9 @@ with MethodOverride{
     lines
   }
 
+/**
+  *Method responsible for presenting adding entry forms
+  */
   val showAddingEntryForm =
     (apiOperation[String]("showAddingEntryForm")
       summary "Show form for adding entries"
@@ -131,6 +145,10 @@ with MethodOverride{
       </body>
     </html>
   }
+
+ /**
+  *Method responsible for presenting removing entry form
+  */
   val showRemovingEntryForm =
     (apiOperation[String]("showRemovingEntryForm")
       summary "Show form for deleting entries"
@@ -158,6 +176,10 @@ with MethodOverride{
       </body>
     </html>
   }
+
+ /**
+  * Method responsible for presenting finding entry form
+  */
   val showFindingEntryForm =
     (apiOperation[String]("showFindingEntryForm")
       summary "Shows form for finding entries"
@@ -198,6 +220,10 @@ with MethodOverride{
       </body>
     </html>
   }
+
+  /**
+   *Method responsible for presenting editing entry form
+   */
   val showEditingEntryForm =
     (apiOperation[String]("showEditingEntryForm")
       summary "Shows form for editing entries"
@@ -264,12 +290,16 @@ with MethodOverride{
       </body>
     </html>
   }
+
+/**
+ * Method that is responsible for adding entries in file
+ */
   val appendEntry =
     (apiOperation[Person]("appendEntry")
       summary "Append entry based on form input"
       parameters(
       pathParam[String]("firstname").description("Name of customer"),
-      pathParam[String]("age").description("Age of customer"),
+      pathParam[Integer]("age").description("Age of customer"),
       pathParam[String]("sex").description("Sex of customer"),
       pathParam[String]("address").description("Address of customer")
       ))
@@ -316,6 +346,9 @@ with MethodOverride{
       }
     }
   }
+  /**
+   *  Method that is responsible for finding entries in file
+   */
   val findEntry =
     (apiOperation[Person]("findEntry")
       summary "Find entry based on form input"
@@ -350,7 +383,9 @@ with MethodOverride{
     }
     result
   }
-
+  /**
+   *  Method that is responsible for removing entries in file
+   */
   val removeEntry =
     (apiOperation[Person]("removeEntry")
       summary "Removing entry based on form input"
@@ -358,7 +393,7 @@ with MethodOverride{
       pathParam[String]("user").description("Name of customer")
       ))
 
-  delete("/plik/remove", operation(removeEntry)){
+  post("/plik/remove", operation(removeEntry)){
     val nameToRemove = params.get("user").get
     val file: Seekable =  Resource.fromFile(new File("file.txt"))
     var position = 0
@@ -369,7 +404,7 @@ with MethodOverride{
           println(line.length)
           println(line)
         }  else {
-          position = position + line.length + 2
+          position = position + line.length + 1
         }
       }
     }
@@ -378,6 +413,9 @@ with MethodOverride{
     source.close()
     lines.toString
   }
+  /**
+   *  Method that is responsible for editing entries in file
+   */
   val editEntry =
     (apiOperation[String]("editEntry")
       summary "Finds and edits entry based on form input"
@@ -392,7 +430,7 @@ with MethodOverride{
       pathParam[String]("newAddress").description("New Address of customer")
       ))
 
-  put("/plik/edite", operation(editEntry)){
+  post("/plik/edite", operation(editEntry)){
 
     var name = params.get("name").get
     var newName = params.get("newName").get
@@ -448,7 +486,7 @@ with MethodOverride{
             if ( linesubstring.isEmpty == false)
               currentLineResult = findMatch ( line.substring(0, (line.length-offset)), personToEdit )}
           if ( currentLineResult.isEmpty){
-            position = position + line.length + 1
+            position = position + line.length + 2
           }
           else {
 
@@ -476,7 +514,7 @@ with MethodOverride{
               file.patch(position  , newLine , OverwriteSome(line.length))
               file.string
               println("offset:" + offset)
-              position = position + newLine.length + 1
+              position = position + newLine.length + 2
             }
           }
         }
@@ -489,7 +527,20 @@ with MethodOverride{
       NotAcceptable("New name must be unique")
     }
   }
-
+  // komenda CURLowa
+  // curl -X PUT --data test="variable" http://localhost:8080/file/test
+  put("/test") {
+    if (!params.contains("test")) halt (400, "test was missing\n")
+    params.get("test").get
+  }
+  // komenda CURLowa
+  // curl -X DELETE http://localhost:8080/proba
+  delete("/proba") {
+     "BRIAMBORIAKI"
+  }
+  /**
+   * Adding styles to server
+   */
   get("/mystyle.css"){
     val source = scala.io.Source.fromFile("mystyle.css")
     val lines = source.mkString
@@ -503,8 +554,24 @@ with MethodOverride{
     source.close
     lines
   }
+  notFound {
+    // remove content type in case it was set through an action
+    contentType = null
+    // Try to render a ScalateTemplate if no route matched
+    findTemplate(requestPath) map { path =>
+      contentType = "text/html"
+      layoutTemplate(path)
+    } orElse serveStaticResource() getOrElse resourceNotFound()
+  }
 
-
+  /**
+   * Auxiliary method for finding matches in file
+   * it searches for specific Person type based fields
+   * that were passed in  findform
+   * @param line from resource file (in json format)
+   * @param personToFind
+   * @return
+   */
   def findMatch(line : String ,  personToFind : Person ) : String = {
 
     var currentLine =  parse(line , true).extract[Person]
@@ -530,10 +597,23 @@ with MethodOverride{
 
   }
 
+  /**
+   * Method which turns Person(name, age, sex, address) class into json
+   * @param person
+   * @return
+   */
   def toJson(person :Person) : String = {
     "{\"name\":\"%s\",\"age\":%s,\"sex\":\"%s\",\"address\":\"%s\"}".format(person.name , person.age, person.sex, person.address)
   }
 
+  /**
+   * Method which takes as parameter new Person and line in which this person can be found in json file
+   * Returns either empty String, which there was no such Person in file
+   * or json of Person
+   * @param line
+   * @param personToEdit
+   * @return
+   */
   def editPerson(line : String ,  personToEdit : Person ) : String = {
     var currentLine =  parse(line , true).extract[Person]
     println(personToEdit)
@@ -559,6 +639,11 @@ with MethodOverride{
     toJson(Person(name, age, sex, address))
   }
 
+  /**
+   * Auxiliary method which checks if passed name in form is unique
+   * @param personToFind
+   * @return
+   */
   def findIfNameIsUnique (personToFind: Person) : Boolean = {
     var isUnique = true
     val source = scala.io.Source.fromFile("file.txt")
